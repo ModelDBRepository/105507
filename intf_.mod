@@ -25,7 +25,11 @@ extern Object** hoc_objgetarg();
 extern int ivoc_list_count(Object*);
 extern Object* ivoc_list_item(Object*, int);
 static void hxe() { hoc_execerror("",0); }
+#if defined(t)
+static void initmodel();
+#else
 static initmodel();
+#endif
 
 extern int stoprun;
 extern double hoc_epsilon;
