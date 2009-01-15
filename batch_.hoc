@@ -10069,7 +10069,7 @@ proc nqs2txt () { local ii,last,lnum,n,fl1 localobj f,fn
 }
 
 // nqssplit(file,N) // read in large file and split in N pieces
-proc nqssplit () { local n,ii,last,lnum,n,fl1 localobj f,stem,qq
+proc nqssplit () { local n,ii,last,lnum,fl1 localobj f,stem,qq
   stem=new String() f=new File()
   qq=new NQS($s1)
   n=$2
