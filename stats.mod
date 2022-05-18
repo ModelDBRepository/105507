@@ -31,7 +31,6 @@ ASSIGNED { }
 VERBATIM
 #include <stdlib.h>
 #include <math.h>
-#include <values.h> /* contains MAXLONG */
 #include <sys/time.h> 
 extern double BVBASE;
 extern double* hoc_pgetarg();
@@ -46,9 +45,6 @@ extern double hoc_epsilon;
 extern void set_seed();
 extern int ivoc_list_count(Object*);
 extern Object* ivoc_list_item(Object*, int);
-extern int list_vector_px2();
-int list_vector_px();
-int list_vector_resize();
 static void hxe() { hoc_execerror("",0); }
 
 typedef struct BVEC {
@@ -484,7 +480,7 @@ FUNCTION gammln (xx) {
 FUNCTION betai(a,b,x) {
 VERBATIM {
   double bt;
-  double gammln(),betacf();
+  double gammln(double), betacf(double, double, double);
 
   if (_lx < 0.0 || _lx > 1.0) {printf("Bad x in routine BETAI\n"); hxe();}
   if (_lx == 0.0 || _lx == 1.0) bt=0.0;

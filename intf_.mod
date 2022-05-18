@@ -19,7 +19,6 @@ ENDCOMMENT
 VERBATIM
 extern void* vector_arg();
 extern FILE* hoc_obj_file_arg(int narg);
-extern int list_vector_px(Object *ob, int i, double** px);
 extern int list_vector_px2 (Object *ob, int i, double** px, void** vv);
 extern Object** hoc_objgetarg();
 extern int ivoc_list_count(Object*);
