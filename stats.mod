@@ -480,8 +480,6 @@ FUNCTION gammln (xx) {
 FUNCTION betai(a,b,x) {
 VERBATIM {
   double bt;
-  double gammln(double), betacf(double, double, double);
-
   if (_lx < 0.0 || _lx > 1.0) {printf("Bad x in routine BETAI\n"); hxe();}
   if (_lx == 0.0 || _lx == 1.0) bt=0.0;
   else

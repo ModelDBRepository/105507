@@ -571,11 +571,14 @@ PROCEDURE record () {
   VERBATIM {
   int k; double ti;
   vp = SOP;
-  if (tg>=t) return 42;
-  if (vp->p >= vp->size) { if (errflag) return 42;
+  if (tg>=t) return 0;
+  if (vp->p >= vp->size) {
+    if (errflag) return 0;
     printf("**** WARNING out of recording room for INTF type%d id%d at %g****\n",IDP->type,IDP->id,t);
     printf("**************** WARNING: No further WARNINGS ****************\n");
-    errflag=1; return 42; }
+    errflag=1;
+    return 0;
+  }
   for (ti=tg;ti<=t && vp->p < vp->size;ti+=vdt,vp->p++) { 
     val(ti,tg);  
     vp->vvo[0][vp->p]=ti;
@@ -593,7 +596,9 @@ PROCEDURE recspk (x) {
   VERBATIM { int k;
   vp = SOP;
   record();
-  if (vp->p >= vp->size || vp->vvo[6]==0) return 42;
+  if (vp->p >= vp->size || vp->vvo[6]==0) {
+    return 0;
+  }
   vp->vvo[0][vp->p-1]=_lx;
   vp->vvo[6][vp->p-1]=spkht; // the spike
   tg=_lx;
@@ -1084,7 +1089,8 @@ PROCEDURE wrecord (te) {
     for (j= -max;j<=max && k+j>0 && k+j<wwsz;j++) {
       wwo[wrp][k+j] += scale*_t_Psk[j+max]; // direct copy from the Psk table
     }
-  } else if (twg>=t) { return 42;
+  } else if (twg>=t) {
+    return 0;
   } else {
     for (ti=twg,k=(int)floor((twg-rebeg)/vdt+0.5);ti<=t && k<wwsz;ti+=vdt,k++) { 
       valps(ti,twg);  // valps() for pop spike calculation

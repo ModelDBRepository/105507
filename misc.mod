@@ -56,10 +56,7 @@ VERBATIM
        errno else will get a nrnoc error.  Seems to be a problem even
        if I don't include <errno.h> */
 
-    char *filename;
-
-    filename = gargstr(1);
-
+    char* filename = gargstr(1);
     if (*filename && !access(filename, F_OK)) {
         _lfile_exist = 1;
 
@@ -122,7 +119,8 @@ VERBATIM
     
     if (fscanf(pipein,"%lf",&num) != 1) {
         fprintf(stderr,"System call did not return a number\n");
-        fclose(outfile); pclose(pipein);
+        fclose(outfile);
+        pclose(pipein);
         return 0;
     }
 
@@ -177,8 +175,7 @@ ENDVERBATIM
 PROCEDURE fspitchar(c) {
 VERBATIM
 {	
-  FILE* f;
-  f = hoc_obj_file_arg(2);
+  FILE* f = hoc_obj_file_arg(2);
   fprintf(f, "%c", (int)_lc);
 }
 ENDVERBATIM
@@ -224,8 +221,7 @@ ENDVERBATIM
 FUNCTION hocgetc() {
 VERBATIM
 {	
-  FILE* f;
-  f = hoc_obj_file_arg(1);
+  FILE* f = hoc_obj_file_arg(1);
   _lhocgetc = (double)getc(f);
 }
 ENDVERBATIM

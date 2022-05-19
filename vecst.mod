@@ -496,8 +496,7 @@ VERBATIM
 static double iwr(void* vv) {
   int i, j, nx;
   double *x;
-  FILE* f;
-  f = hoc_obj_file_arg(1);
+  FILE* f = hoc_obj_file_arg(1);
   nx = vector_instance_px(vv, &x);
   if (nx>scrsz) { 
     if (scrsz>0) { free(scr); scr=(unsigned int *)NULL; }
@@ -516,8 +515,7 @@ VERBATIM
 static double ird(void* vv) {
   int i, j, nx, n;
   double *x;
-  FILE* f;
-  f = hoc_obj_file_arg(1);
+  FILE* f = hoc_obj_file_arg(1);
   nx = vector_instance_px(vv, &x);
   fread(&n,sizeof(int),1,f);  // size
   if (n>scrsz) { 
