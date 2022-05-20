@@ -540,7 +540,7 @@ PROCEDURE vers () {
 
 :** val(t,tstart) fills global vii[] to pass values back to record() (called from record())
 VERBATIM
-double val (double xx, double ta) { 
+void val (double xx, double ta) {
   vii[1]=VAM*EXP(-(xx - ta)/tauAM);
   vii[2]=VNM*EXP(-(xx - ta)/tauNM);
   vii[3]=VGA*EXP(-(xx - ta)/tauGA);
@@ -556,7 +556,7 @@ ENDVERBATIM
 
 :** valps(t,tstart) like val but builds voltages for pop spike
 VERBATIM
-double valps (double xx, double ta) { 
+void valps (double xx, double ta) {
   vii[1]=VAM*EXP(-(xx - ta)/tauAM);
   vii[2]=VNM*EXP(-(xx - ta)/tauNM);
   vii[3]=VGA*EXP(-(xx - ta)/tauGA);
