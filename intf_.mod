@@ -540,7 +540,7 @@ PROCEDURE vers () {
 
 :** val(t,tstart) fills global vii[] to pass values back to record() (called from record())
 VERBATIM
-void val (double xx, double ta) {
+void val(double xx, double ta) {
   vii[1]=VAM*EXP(-(xx - ta)/tauAM);
   vii[2]=VNM*EXP(-(xx - ta)/tauNM);
   vii[3]=VGA*EXP(-(xx - ta)/tauGA);
@@ -556,7 +556,7 @@ ENDVERBATIM
 
 :** valps(t,tstart) like val but builds voltages for pop spike
 VERBATIM
-void valps (double xx, double ta) {
+void valps(double xx, double ta) {
   vii[1]=VAM*EXP(-(xx - ta)/tauAM);
   vii[2]=VNM*EXP(-(xx - ta)/tauNM);
   vii[3]=VGA*EXP(-(xx - ta)/tauGA);
@@ -681,11 +681,11 @@ PROCEDURE trvsp ()
 {
   VERBATIM 
   int i, flag; 
-  double ind, t0;
+  double ind, t0_local;
   ip=IDP;
   flag=(int) *getarg(1);
   if (subsvint==0.) {printf("trvsp"); return(0.);}
-  ind=isp[0]; t0=vsp[0];
+  ind=isp[0]; t0_local=vsp[0];
   if (flag==1) {
     for (i=0; i<vspn; i++) {
       if (isp[i]!=ind) {
@@ -697,11 +697,12 @@ PROCEDURE trvsp ()
   } else if (flag==2) {
     for (i=0; i<vspn; i++) {
       if (isp[i]!=ind) {
-        vsp[i-1]=t0+subsvint;
-        ind=isp[i]; t0=vsp[i];
+        vsp[i-1] = t0_local + subsvint;
+        ind = isp[i];
+        t0_local = vsp[i];
       }
     }
-    vsp[vspn-1]=t0+subsvint;
+    vsp[vspn-1] = t0_local + subsvint;
   } else {printf("trvsp flag %d not recognized\n",flag); hxe();}
   ENDVERBATIM
 }

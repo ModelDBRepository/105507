@@ -616,7 +616,7 @@ static double vfill (void* vv) {
 	nx = vector_instance_px(vv, &x);
 	nv1 = vector_arg_px(1, &v1);
         for (i=0;i<nx;i++) x[i]=v1[i%nv1];
-	return 0.0;
+  return 0.0;
 }
 ENDVERBATIM
 
@@ -993,7 +993,7 @@ static double keyind(void* vv) {
   int i, j, k, ni, nk, nv[VRRY], num;
   double *ind, *key, *vvo[VRRY];
   ni = vector_instance_px(vv, &ind); // vv is ind
-  for (i=0;ifarg(i);i++); i--; // drop back by one to get numarg()
+  for (i=0;ifarg(i);i++) {} i--; // drop back by one to get numarg()
   if (i>VRRY) hoc_execerror("ERR: keyind can only handle VRRY vectors", 0);
   num = i-1; // number of vectors to be picked apart 
   for (i=0;i<num;i++) { 
