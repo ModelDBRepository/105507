@@ -91,9 +91,9 @@ PARAMETER {
 ASSIGNED { RES }
 
 VERBATIM
+#ifndef NRN_VERSION_GTEQ_8_2_0
 #include <stdlib.h>
 #include <math.h>
-#include <values.h> // contains MAXLONG 
 #include <sys/time.h> 
 extern double* hoc_pgetarg();
 extern double hoc_call_func(Symbol*, int narg);
@@ -111,10 +111,11 @@ extern Object* ivoc_list_item(Object*, int);
 extern int hoc_is_double_arg(int narg);
 extern char* hoc_object_name(Object*);
 char ** hoc_pgargstr();
-static int ismono1();
-int list_vector_px();
-int list_vector_px2();
-int list_vector_resize();
+#endif
+static int ismono1 (double *x, int n, int flag);
+int list_vector_px(Object *ob, int i, double** px);
+int list_vector_px2 (Object *ob, int i, double** px, void** vv);
+int list_vector_resize (Object *ob, int i, int sz);
 static double sc[6];
 static void hxe() { hoc_execerror("",0); }
 
@@ -147,6 +148,7 @@ static double ident(void* vv) {
   nx = vector_instance_px(vv, &x);
   bsz=vector_buffer_size(vv);
   printf("Obj*%x Dbl*%x Size: %d Bufsize: %d\n",vv,x,nx,bsz);
+  return 0.0;
 }
 ENDVERBATIM
  
@@ -495,8 +497,7 @@ VERBATIM
 static double iwr(void* vv) {
   int i, j, nx;
   double *x;
-  FILE* f, *hoc_obj_file_arg();
-  f = hoc_obj_file_arg(1);
+  FILE* f = hoc_obj_file_arg(1);
   nx = vector_instance_px(vv, &x);
   if (nx>scrsz) { 
     if (scrsz>0) { free(scr); scr=(unsigned int *)NULL; }
@@ -515,8 +516,7 @@ VERBATIM
 static double ird(void* vv) {
   int i, j, nx, n;
   double *x;
-  FILE* f, *hoc_obj_file_arg();
-  f = hoc_obj_file_arg(1);
+  FILE* f = hoc_obj_file_arg(1);
   nx = vector_instance_px(vv, &x);
   fread(&n,sizeof(int),1,f);  // size
   if (n>scrsz) { 
@@ -544,7 +544,7 @@ VERBATIM
 static double fread2(void* vv) {
   int i, j, nx, n, type, maxsz;
   double *x;
-  FILE* fp, *hoc_obj_file_arg();
+  FILE* fp;
   BYTEHEADER
 
   fp = hoc_obj_file_arg(1);
@@ -583,6 +583,7 @@ static double fread2(void* vv) {
     }
     free((char *)xf);    
   } else hoc_execerror("Type unsupported in fread2 ", 0);
+  return 0.0;
 }
 ENDVERBATIM
 
@@ -615,6 +616,7 @@ static double vfill (void* vv) {
 	nx = vector_instance_px(vv, &x);
 	nv1 = vector_arg_px(1, &v1);
         for (i=0;i<nx;i++) x[i]=v1[i%nv1];
+  return 0.0;
 }
 ENDVERBATIM
 
@@ -799,6 +801,7 @@ static double vscl(double *x, double n) {
   r=max-min;  // range
   sf = (b-a)/r; // scaling factor
   for (i=0;i<n;i++) x[i]=(x[i]-min)*sf+a;
+  return 0.0;
 }
 ENDVERBATIM
 
@@ -812,6 +815,7 @@ static double scl(void* vv) {
   if (nx!=nsrc) { hoc_execerror("scl:Vectors not same size: ", 0); }
   for (i=0;i<nx;i++) x[i]=src[i];
   vscl(x,nx);
+  return 0.0;
 }
 ENDVERBATIM
 
@@ -834,6 +838,7 @@ static double sccvlv(void* vv) {
     vscl(tmp,j-1);
     for (k=0;k<j;k++) x[i]+=filt[k]*tmp[k];
   }
+  return 0.0;
 }
 ENDVERBATIM
 
@@ -890,6 +895,7 @@ static double cvlv (void* vv) {
       if (k>0 && k<nsrc-1) x[i]+=filt[j]*src[k];
     }
   }
+  return 0.0;
 }
 ENDVERBATIM
 
@@ -987,7 +993,7 @@ static double keyind(void* vv) {
   int i, j, k, ni, nk, nv[VRRY], num;
   double *ind, *key, *vvo[VRRY];
   ni = vector_instance_px(vv, &ind); // vv is ind
-  for (i=0;ifarg(i);i++); i--; // drop back by one to get numarg()
+  for (i=0;ifarg(i);i++) {} i--; // drop back by one to get numarg()
   if (i>VRRY) hoc_execerror("ERR: keyind can only handle VRRY vectors", 0);
   num = i-1; // number of vectors to be picked apart 
   for (i=0;i<num;i++) { 
@@ -1087,6 +1093,7 @@ static double bpeval(void* vv) {
   } else {
     for (i=0;i<n;i++) vo[i]=outp[i]*(1.-1.*outp[i])*del[i];
   }
+  return 0.0;
 }
 ENDVERBATIM
  
@@ -2033,7 +2040,15 @@ FUNCTION isojt () {
   Object *ob1, *ob2;
   ob1 = *hoc_objgetarg(1); ob2 = *hoc_objgetarg(2);
   if (!ob1) if (!ob2) return 1; else return 0;
-  if (!ob2 || ob1->template != ob2->template) {
+#define ctemplate template
+#ifdef NRN_VERSION_GTEQ_8_2_0
+#if NRN_VERSION_GTEQ(9, 0, 0)
+#undef ctemplate
+#define ctemplate ctemplate
+#endif
+#endif
+  if (!ob2 || ob1->ctemplate != ob2->ctemplate) {
+#undef ctemplate
     return 0;
   }
   return 1;

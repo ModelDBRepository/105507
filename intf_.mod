@@ -19,7 +19,6 @@ ENDCOMMENT
 VERBATIM
 extern void* vector_arg();
 extern FILE* hoc_obj_file_arg(int narg);
-extern int list_vector_px(Object *ob, int i, double** px);
 extern int list_vector_px2 (Object *ob, int i, double** px, void** vv);
 extern Object** hoc_objgetarg();
 extern int ivoc_list_count(Object*);
@@ -184,7 +183,7 @@ CONSTRUCTOR {
     if (ifarg(1)) { lid=(int) *getarg(1); } else { lid= UINT_MAX; }
     if (ifarg(2)) { lty=(int) *getarg(2); } else { lty= -1; }
     if (ifarg(3)) { lco=(int) *getarg(3); } else { lco= -1; }
-    _p_sop = (void*)ecalloc(1, sizeof(id0));
+    _p_sop = (double*)ecalloc(1, sizeof(id0));
     ip = IDP;
     ip->id=lid; ip->type=lty; ip->col=lco; 
     ip->invl0 = ip->record = ip->jitter = ip->input = 0; // all flags off
@@ -541,7 +540,7 @@ PROCEDURE vers () {
 
 :** val(t,tstart) fills global vii[] to pass values back to record() (called from record())
 VERBATIM
-double val (double xx, double ta) { 
+void val(double xx, double ta) {
   vii[1]=VAM*EXP(-(xx - ta)/tauAM);
   vii[2]=VNM*EXP(-(xx - ta)/tauNM);
   vii[3]=VGA*EXP(-(xx - ta)/tauGA);
@@ -557,7 +556,7 @@ ENDVERBATIM
 
 :** valps(t,tstart) like val but builds voltages for pop spike
 VERBATIM
-double valps (double xx, double ta) { 
+void valps(double xx, double ta) {
   vii[1]=VAM*EXP(-(xx - ta)/tauAM);
   vii[2]=VNM*EXP(-(xx - ta)/tauNM);
   vii[3]=VGA*EXP(-(xx - ta)/tauGA);
@@ -572,11 +571,14 @@ PROCEDURE record () {
   VERBATIM {
   int k; double ti;
   vp = SOP;
-  if (tg>=t) return;
-  if (vp->p >= vp->size) { if (errflag) return; 
+  if (tg>=t) return 0;
+  if (vp->p >= vp->size) {
+    if (errflag) return 0;
     printf("**** WARNING out of recording room for INTF type%d id%d at %g****\n",IDP->type,IDP->id,t);
     printf("**************** WARNING: No further WARNINGS ****************\n");
-    errflag=1; return; }
+    errflag=1;
+    return 0;
+  }
   for (ti=tg;ti<=t && vp->p < vp->size;ti+=vdt,vp->p++) { 
     val(ti,tg);  
     vp->vvo[0][vp->p]=ti;
@@ -594,7 +596,9 @@ PROCEDURE recspk (x) {
   VERBATIM { int k;
   vp = SOP;
   record();
-  if (vp->p >= vp->size || vp->vvo[6]==0) return; 
+  if (vp->p >= vp->size || vp->vvo[6]==0) {
+    return 0;
+  }
   vp->vvo[0][vp->p-1]=_lx;
   vp->vvo[6][vp->p-1]=spkht; // the spike
   tg=_lx;
@@ -677,11 +681,11 @@ PROCEDURE trvsp ()
 {
   VERBATIM 
   int i, flag; 
-  double ind, t0;
+  double ind, t0_local;
   ip=IDP;
   flag=(int) *getarg(1);
   if (subsvint==0.) {printf("trvsp"); return(0.);}
-  ind=isp[0]; t0=vsp[0];
+  ind=isp[0]; t0_local=vsp[0];
   if (flag==1) {
     for (i=0; i<vspn; i++) {
       if (isp[i]!=ind) {
@@ -693,11 +697,12 @@ PROCEDURE trvsp ()
   } else if (flag==2) {
     for (i=0; i<vspn; i++) {
       if (isp[i]!=ind) {
-        vsp[i-1]=t0+subsvint;
-        ind=isp[i]; t0=vsp[i];
+        vsp[i-1] = t0_local + subsvint;
+        ind = isp[i];
+        t0_local = vsp[i];
       }
     }
-    vsp[vspn-1]=t0+subsvint;
+    vsp[vspn-1] = t0_local + subsvint;
   } else {printf("trvsp flag %d not recognized\n",flag); hxe();}
   ENDVERBATIM
 }
@@ -1085,7 +1090,8 @@ PROCEDURE wrecord (te) {
     for (j= -max;j<=max && k+j>0 && k+j<wwsz;j++) {
       wwo[wrp][k+j] += scale*_t_Psk[j+max]; // direct copy from the Psk table
     }
-  } else if (twg>=t) { return;
+  } else if (twg>=t) {
+    return 0;
   } else {
     for (ti=twg,k=(int)floor((twg-rebeg)/vdt+0.5);ti<=t && k<wwsz;ti+=vdt,k++) { 
       valps(ti,twg);  // valps() for pop spike calculation
