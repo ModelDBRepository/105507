@@ -9945,7 +9945,7 @@ batch_flag=0
 // mkspmat() uses sp and sp[1], returns sp
 proc mkspmat () { local a,sn,ii,jj,n,x,y localobj vr,vo
   x=$1 y=$2 // z=$3
-  rdm.ACG(903342)
+  rdm.Random123(903342)
   a=allocvecs(vr,vo)
   sn=pmat[x][y]*numc[x]*numc[y] // number of synapses
   for ii=0,1 sp[ii].clear
@@ -9975,7 +9975,7 @@ proc mkspmat () { local a,sn,ii,jj,n,x,y localobj vr,vo
 // mkpomat() only make the array for a single postsynaptic cell
 proc mkpomat () { local a,sn,ii,jj,n,x,y,yid localobj vr,vo
   x=$1 y=$2 yid=$4
-  // rdm.ACG(903342)
+  // rdm.Random123(903342)
   a=allocvecs(vr,vo)
   sn=pmat[x][y]*numc[x]*1 // number of synapses
   if (sn<1) { // treat sn<1 as a prob of connecting rather than a density
@@ -10296,7 +10296,7 @@ iterator ixt () { local ii
 
 proc setDP () { local ii,ty
     ty=DP
-    rdm.ACG(33020319)
+    rdm.Random123(33020319)
     ind.resize(numc[ty])
     rdm.uniform(0,1)
     ind.setrand(rdm)
@@ -10316,7 +10316,7 @@ proc setDP () { local ii,ty
 
 proc setSU () { local ii,ty
     ty=SU
-    rdm.ACG(913233)
+    rdm.Random123(913233)
     ind.resize(numc[ty])
     rdm.uniform(0,1)
     ind.setrand(rdm)
@@ -10453,7 +10453,7 @@ proc wmul () { local ii,pr1,po1,sy1,w1,wd,sy2
   } 
 
 proc rewt () {
-    rdm.ACG(913342)
+    rdm.Random123(913342)
     wmul(SU,SU,AM,SUSUAM)
     wmul(SU,SU,NM,SUSUNM)
     wmul(SU,DP,AM,SUDPAM)
